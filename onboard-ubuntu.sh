@@ -229,6 +229,27 @@ gsettings set org.gnome.Terminal.Legacy.Profile:$PROFILE_PATH foreground-color '
 echo "GNOME Terminal profile configured for Zsh, dark style, and Linux Console palette."
 
 # ---------------------------
+# Install Tailscale (using official install script)
+# ---------------------------
+if command -v tailscale >/dev/null 2>&1; then
+  echo "Tailscale is already installed, skipping installation."
+else
+  echo "Installing Tailscale using the official install script..."
+  
+  # Run the official Tailscale installation script from their site
+  curl -fsSL https://tailscale.com/install.sh | sh
+  
+  echo "Tailscale installation complete."
+fi
+
+# Start Tailscale (authenticate) regardless of fresh install or already installed
+echo "Starting Tailscale and logging in (if not already up)..."
+sudo tailscale up || echo "Tailscale 'up' command failed or was already connected."
+
+echo "Tailscale setup complete."
+
+
+# ---------------------------
 # Clean up
 # ---------------------------
 echo "Cleaning up..."
