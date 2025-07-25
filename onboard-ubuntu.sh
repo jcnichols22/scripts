@@ -34,6 +34,15 @@ sudo apt install -y code
 sudo apt install -y git curl
 
 # ---------------------------
+# Configure git with user details
+# ---------------------------
+echo "Configuring git with user details..."
+git config --global user.email "jcnichols22@gmail.com"
+git config --global user.name "Josh Nichols"
+
+
+
+# ---------------------------
 # Clone dotfiles repo and symlink .bash_aliases
 # ---------------------------
 DOTFILES_DIR="$HOME/dotfiles"
