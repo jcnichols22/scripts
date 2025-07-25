@@ -8,29 +8,20 @@ sudo apt install -y curl apt-transport-https ca-certificates gnupg lsb-release w
 # Ensure snapd is enabled and up to date
 sudo systemctl enable --now snapd
 
+
+
 # ---------------------------
-# Install Brave Browser (Snap)
+# Install snap Applications
 # ---------------------------
 sudo snap install brave
-
-# ---------------------------
-# Install 1Password
-# ---------------------------
-sudo apt install -y 1password
-
-# ---------------------------
-# Install Obsidian (Snap)
-# ---------------------------
 sudo snap install obsidian --classic
 
 # ---------------------------
-# Install Visual Studio Code
+# Install apt Applications
 # ---------------------------
-sudo apt install -y code
 
-# ---------------------------
-# Install git and curl (if not already installed)
-# ---------------------------
+sudo apt install -y 1password
+sudo apt install -y code
 sudo apt install -y git curl
 
 # ---------------------------
@@ -39,7 +30,6 @@ sudo apt install -y git curl
 echo "Configuring git with user details..."
 git config --global user.email "jcnichols22@gmail.com"
 git config --global user.name "Josh Nichols"
-
 
 
 # ---------------------------
@@ -133,7 +123,8 @@ echo "Installing Zsh..."
 sudo apt install -y zsh
 
 echo "Setting Zsh as the default shell for user $USER..."
-chsh -s "$(which zsh)"
+sudo chsh -s "$(which zsh)" josh
+
 
 # ---------------------------
 # Install Oh My Zsh
