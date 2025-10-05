@@ -14,7 +14,12 @@ Write-Host "Running Windows Update to install all available updates..."
 Install-PackageProvider -Name NuGet -Force -Confirm:$false | Out-Null
 Install-Module PSWindowsUpdate -Force -Confirm:$false
 Import-Module PSWindowsUpdate
-Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -Confirm:$false
+
+# Capture update installation results
+$updateResults = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -Confirm:$false
+
+# Check if reboot is pending from Windows Update registry key
+$rebootRequired = Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired"
 
 # Set power plan to High Performance
 Write-Host "Setting power plan to High Performance..."
@@ -22,6 +27,7 @@ powercfg -setactive SCHEME_MIN
 
 # Define apps to install
 $apps = @(
+    # (your list of apps as before)
     "Brave.Brave",
     "Microsoft.VisualStudioCode",
     "Obsidian.Obsidian",
@@ -59,17 +65,15 @@ foreach ($app in $apps) {
     }
 }
 
-# Set Brave as the default browser
+# Set Brave as default browser
 Write-Host "Setting Brave Browser as default..."
 $BraveProgId = "BraveHTML"
-
 $associations = @{
     "http"  = $BraveProgId
     "https" = $BraveProgId
     ".htm"  = $BraveProgId
     ".html" = $BraveProgId
 }
-
 foreach ($assoc in $associations.GetEnumerator()) {
     try {
         Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\$($assoc.Key)\UserChoice" -Name "ProgId" -Value $assoc.Value -ErrorAction Stop
@@ -81,23 +85,14 @@ foreach ($assoc in $associations.GetEnumerator()) {
 }
 
 # Taskbar Customizations
-
-# Center the taskbar
+# (same as before)
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value 1
-
-# Hide Search from taskbar
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchBoxTaskbarMode" -Value 0
-
-# Hide Task View button
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
-
-# Hide Widgets
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0
-
-# Enable auto-hide for system tray icons
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "EnableAutoTray" -Value 1
 
-# Set Windows to Dark Mode (for system and apps)
+# Windows Dark Mode
 Write-Host "Setting Windows Dark Mode..."
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 0
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0
@@ -106,6 +101,11 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\P
 Stop-Process -Name explorer -Force
 Start-Process explorer.exe
 
-Write-Host "Setup and customizations completed. System will now restart in 15 seconds..."
-Start-Sleep -Seconds 15
-Restart-Computer -Force
+# Conditional reboot logic: reboot only if updates installed or reboot pending
+if (($updateResults -and $updateResults.Count -gt 0) -or $rebootRequired) {
+    Write-Host "Updates installed or reboot required. System will reboot in 15 seconds..."
+    Start-Sleep -Seconds 15
+    Restart-Computer -Force
+} else {
+    Write-Host "No updates or reboot needed. Setup completed."
+}
