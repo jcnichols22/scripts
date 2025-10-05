@@ -43,7 +43,8 @@ $apps = @(
     "AntoineAflalo.SoundSwitch",
     "7zip.7zip",
     "Rufus.Rufus",
-    "EpicGames.EpicGamesLauncher"
+    "EpicGames.EpicGamesLauncher",
+    "Git.Git"
 )
 
 # Install apps with auto-confirmation and silent mode
