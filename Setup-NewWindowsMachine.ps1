@@ -97,6 +97,21 @@ Write-Host "Setting Windows Dark Mode..."
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 0
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0
 
+# Set wallpaper to solid black color
+Write-Host "Setting wallpaper to a solid black color..."
+
+# Set the background type to 'solid color' (0 = Picture, 1 = Solid Color, 2 = Slideshow)
+Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WallpaperStyle" -Value 0
+Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "TileWallpaper" -Value 0
+
+# Use a blank (black) wallpaper
+Set-ItemProperty -Path "HKCU:\Control Panel\Colors" -Name "Background" -Value "0 0 0"
+Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "Wallpaper" -Value ""
+
+# Update display to apply new wallpaper color
+RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters
+
+
 # Restart Explorer to apply visual changes
 Stop-Process -Name explorer -Force
 Start-Process explorer.exe
